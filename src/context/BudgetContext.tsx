@@ -155,6 +155,42 @@ export const BudgetProvider = ({ children }: { children: ReactNode }) => {
 
   const setMonthlyBudget = (budget: number) => {
     setMonthlyBudgetState(budget);
+    
+    // 🆕 Auto-deduct shopping list items when budget is set
+    processShoppingListDeduction();
+  };
+
+  // 🆕 Process shopping list deduction
+  const processShoppingListDeduction = () => {
+    try {
+      const shoppingList = localStorage.getItem('shoppingList');
+      if (!shoppingList) return;
+
+      const items = JSON.parse(shoppingList);
+      const uncheckedItems = items.filter((item: any) => !item.checked);
+      
+      if (uncheckedItems.length === 0) return;
+
+      // Create transactions for each unchecked item
+      const now = new Date().toISOString();
+      const newTransactions: Transaction[] = uncheckedItems.map((item: any) => ({
+        id: `shopping-${Date.now()}-${Math.random()}`,
+        description: `${item.name} ${item.quantity > 1 ? `(${item.quantity}×)` : ''}`,
+        amount: 0, // You can add price later if needed
+        category: 'shopping',
+        type: 'expense' as const,
+        date: now,
+      }));
+
+      // Mark all items as checked
+      const updatedItems = items.map((item: any) => ({ ...item, checked: true }));
+      localStorage.setItem('shoppingList', JSON.stringify(updatedItems));
+
+      // Add transactions (if they have amounts)
+      // For now, just mark them as checked
+    } catch (error) {
+      console.error('Error processing shopping list:', error);
+    }
   };
 
   const addTransaction = (transaction: Omit<Transaction, 'id'>) => {
