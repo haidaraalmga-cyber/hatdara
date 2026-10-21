@@ -171,16 +171,16 @@ export const BudgetProvider = ({ children }: { children: ReactNode }) => {
       
       if (uncheckedItems.length === 0) return;
 
-      // Create transactions for each unchecked item
-      const now = new Date().toISOString();
-      const newTransactions: Transaction[] = uncheckedItems.map((item: any) => ({
-        id: `shopping-${Date.now()}-${Math.random()}`,
-        description: `${item.name} ${item.quantity > 1 ? `(${item.quantity}×)` : ''}`,
-        amount: 0, // You can add price later if needed
-        category: 'shopping',
-        type: 'expense' as const,
-        date: now,
-      }));
+      // Create transactions for each unchecked item (not currently used, but kept for future feature)
+      // const now = new Date().toISOString();
+      // const newTransactions: Transaction[] = uncheckedItems.map((item: any) => ({
+      //   id: `shopping-${Date.now()}-${Math.random()}`,
+      //   description: `${item.name} ${item.quantity > 1 ? `(${item.quantity}×)` : ''}`,
+      //   amount: 0, // You can add price later if needed
+      //   category: 'shopping',
+      //   type: 'expense' as const,
+      //   date: now,
+      // }));
 
       // Mark all items as checked
       const updatedItems = items.map((item: any) => ({ ...item, checked: true }));
