@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code - ميزانيتي</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 30px;
+            padding: 50px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            max-width: 600px;
+            width: 100%;
+            animation: slideUp 0.6s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1 {
+            color: #667eea;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: 800;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 1.2em;
+            margin-bottom: 40px;
+        }
+
+        .qr-container {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 30px;
+            border-radius: 20px;
+            margin-bottom: 30px;
+            display: inline-block;
+        }
+
+        #qrcode {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            display: inline-block;
+        }
+
+        .url-box {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 30px 0;
+            word-break: break-all;
+        }
+
+        .url-label {
+            color: #667eea;
+            font-weight: bold;
+            font-size: 0.9em;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .url-text {
+            color: #333;
+            font-size: 1.1em;
+            font-family: monospace;
+            direction: ltr;
+            user-select: all;
+        }
+
+        .instructions {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 30px;
+            text-align: right;
+        }
+
+        .instructions h3 {
+            color: #856404;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .instructions ol {
+            color: #856404;
+            text-align: right;
+            padding-right: 20px;
+        }
+
+        .instructions li {
+            margin: 10px 0;
+            line-height: 1.6;
+        }
+
+        .emoji {
+            font-size: 1.5em;
+            margin-left: 10px;
+        }
+
+        .network-info {
+            background: #d1ecf1;
+            border: 2px solid #bee5eb;
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 20px;
+            text-align: right;
+        }
+
+        .network-info h3 {
+            color: #0c5460;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+
+        .network-list {
+            color: #0c5460;
+            text-align: right;
+            padding-right: 20px;
+            line-height: 1.8;
+        }
+
+        .copy-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 50px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .copy-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        .copy-btn:active {
+            transform: translateY(0);
+        }
+
+        .success-message {
+            color: #28a745;
+            font-weight: bold;
+            margin-top: 10px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .success-message.show {
+            opacity: 1;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 30px 20px;
+            }
+
+            h1 {
+                font-size: 2em;
+            }
+
+            .qr-container {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📱 ميزانيتي</h1>
+        <p class="subtitle">امسح الكود لفتح التطبيق على موبايلك</p>
+
+        <div class="qr-container">
+            <div id="qrcode"></div>
+        </div>
+
+        <div class="url-box">
+            <span class="url-label">🔗 الرابط المباشر:</span>
+            <div class="url-text" id="urlText">جاري التحميل...</div>
+        </div>
+
+        <button class="copy-btn" onclick="copyUrl()">
+            📋 نسخ الرابط
+        </button>
+        <div class="success-message" id="successMsg">✓ تم النسخ بنجاح!</div>
+
+        <div class="network-info">
+            <h3>🌐 الروابط المتاحة:</h3>
+            <div class="network-list" id="networkList">
+                جاري تحميل الروابط...
+            </div>
+        </div>
+
+        <div class="instructions">
+            <h3>📖 كيفية الاستخدام:</h3>
+            <ol>
+                <li><span class="emoji">📱</span> افتح كاميرا الموبايل</li>
+                <li><span class="emoji">📷</span> وجّه الكاميرا نحو الـ QR Code</li>
+                <li><span class="emoji">👆</span> اضغط على الإشعار الظاهر</li>
+                <li><span class="emoji">🎉</span> استمتع بالتطبيق!</li>
+            </ol>
+        </div>
+    </div>
+
+    <!-- QR Code Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+    <script>
+        // Get network URLs
+        const urls = [
+            'http://localhost:5173/',
+            'http://10.2.0.2:5173/',
+            'http://192.168.137.226:5173/'
+        ];
+
+        // Use the WiFi network URL for QR code (best for mobile)
+        const qrUrl = urls[2]; // Using 192.168.137.226 which is the WiFi network
+
+        // Display URL
+        document.getElementById('urlText').textContent = qrUrl;
+
+        // Generate QR Code
+        new QRCode(document.getElementById("qrcode"), {
+            text: qrUrl,
+            width: 280,
+            height: 280,
+            colorDark: "#667eea",
+            colorLight: "#ffffff",
+            correctLevel: QRCode.CorrectLevel.H
+        });
+
+        // Display all available URLs
+        const networkListHTML = urls.map((url, index) => {
+            const label = index === 0 ? 'محلي (هذا الجهاز فقط)' : 
+                         index === 1 ? 'شبكة محلية 1' : 
+                         'شبكة WiFi (استخدم هذا!)';
+            return `<div style="margin: 10px 0;">
+                <strong style="color: #0c5460;">${label}:</strong><br>
+                <code style="background: white; padding: 5px 10px; border-radius: 5px; display: inline-block; margin-top: 5px; direction: ltr;">${url}</code>
+            </div>`;
+        }).join('');
+        
+        document.getElementById('networkList').innerHTML = networkListHTML;
+
+        // Copy URL function
+        function copyUrl() {
+            const urlText = document.getElementById('urlText').textContent;
+            navigator.clipboard.writeText(urlText).then(() => {
+                const successMsg = document.getElementById('successMsg');
+                successMsg.classList.add('show');
+                setTimeout(() => {
+                    successMsg.classList.remove('show');
+                }, 2000);
+            });
+        }
+
+        // Auto-detect and display local IP
+        async function getLocalIP() {
+            try {
+                const response = await fetch('http://localhost:5173/');
+                if (response.ok) {
+                    console.log('Server is running!');
+                }
+            } catch (error) {
+                console.log('Make sure the server is running on port 5173');
+            }
+        }
+
+        getLocalIP();
+    </script>
+</body>
+</html>
